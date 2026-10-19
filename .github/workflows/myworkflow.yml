@@ -61,3 +61,20 @@ jobs:
           docker push zaki4u/todo-backend:${{ github.sha }}
           docker push zaki4u/todo-frontend:${{ github.sha }}
 
+       - name: Update Kubernetes image tags
+        if: github.event_name == 'push'
+        run: |
+          sed -i "s|image: zaki4u/todo-backend:.*|image: zaki4u/todo-backend:${GITHUB_SHA}|" todo-k8s/backend/backend-deployment.yml
+          sed -i "s|image: zaki4u/todo-frontend:.*|image: zaki4u/todo-frontend:${GITHUB_SHA}|" todo-k8s/frontend/frontend-deployment.yml
+
+       - name: Commit and push Kubernetes manifests
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add todo-k8s/backend/backend-deployment.yml todo-k8s/frontend/frontend-deployment.yml
+          if ! git diff --cached --quiet; then
+            git commit -m "Update Kubernetes images to ${GITHUB_SHA}"
+            git push origin HEAD:main
+          fi
+
