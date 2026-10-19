@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-backend
+  namespace: my-k8s
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-backend
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+    spec:
+      containers:
+        - name: backend
+          image: zaki4u/todo-backend:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_HOST
+              value: todo-db
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: todo_db
+            - name: DB_USER
+              value: Zaki_user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-db-secret
+                  key: DB_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5

@@ -1,0 +1,49 @@
+
+services:
+  db:
+    image: postgres:16
+    container_name: todo-db
+    environment:
+      POSTGRES_USER: Zaki_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: todo_db
+    volumes:
+      - my-data:/var/lib/postgresql/data
+    networks:
+      - my-network
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    image: todo-backend:1.0
+    container_name: todo-backend
+    environment:
+      DB_HOST: todo-db
+      DB_PORT: "5432"
+      DB_NAME: todo_db
+      DB_USER: Zaki_user
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3000:3000"
+    networks:
+      - my-network
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    image: todo-frontend:1.0
+    container_name: todo-frontend
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+networks:
+  my-network:
+    external: true
+
+volumes:
+  my-data:
+    external: true
+

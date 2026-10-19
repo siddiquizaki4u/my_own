@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-db
+  namespace: my-k8s
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-db
+  template:
+    metadata:
+      labels:
+        app: todo-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: Zaki_user
+            - name: POSTGRES_DB
+              value: todo_db
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-db-secret
+                  key: DB_PASSWORD
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+            - name: db-init
+              mountPath: /docker-entrypoint-initdb.d
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U Zaki_user -d todo_db
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: todo-db-pvc
+        - name: db-init
+          configMap:
+            name: todo-db-init
