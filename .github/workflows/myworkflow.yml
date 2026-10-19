@@ -37,4 +37,10 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: http://localhost:9000
-          
+      
+      - name: Scan frontend image with Trivy
+        run: trivy image --severity HIGH,CRITICAL --exit-code 1 todo-frontend:test
+
+      - name: Scan backend image with Trivy
+        run: trivy image --severity HIGH,CRITICAL --exit-code 1 todo-backend:test
+
