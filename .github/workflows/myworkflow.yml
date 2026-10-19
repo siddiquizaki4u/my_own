@@ -27,18 +27,18 @@ jobs:
       - name: Check backend syntax
         run: node --check backend/server.js
 
-      - name: Build frontend image
-        run: docker build -t todo-frontend:test frontend
-
-      - name: Build backend image
-        run: docker build -t todo-backend:test backend
-         
       - name: SonarQube Cloud Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: http://localhost:9000
       
+      - name: Build frontend image
+        run: docker build -t todo-frontend:test frontend
+
+      - name: Build backend image
+        run: docker build -t todo-backend:test backend
+         
       - name: Scan frontend image with Trivy
         run: trivy image --severity HIGH,CRITICAL --exit-code 1 todo-frontend:test
 
