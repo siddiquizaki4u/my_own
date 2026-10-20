@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: zaki4u/todo-frontend:6e82ce916d4916fb1936ede8d097f19286cd8dd1
+          image: zaki4u/todo-frontend:ded1b8b870388fe70c452716f44f686e588440ad
           imagePullPolicy: Always
           ports:
             - containerPort: 80

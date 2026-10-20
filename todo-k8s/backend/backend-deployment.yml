@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: zaki4u/todo-backend:6e82ce916d4916fb1936ede8d097f19286cd8dd1
+          image: zaki4u/todo-backend:ded1b8b870388fe70c452716f44f686e588440ad
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
